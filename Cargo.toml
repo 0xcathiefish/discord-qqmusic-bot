@@ -16,4 +16,13 @@ reqwest = { version = "0.12.24", features = ["json"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
 
-dotenv = "0.15.0"
+
+
+log = "0.4"
+env_logger = "0.11.8"
+dotenvy = "0.15"
+
+thiserror = "2.0.17"
+anyhow = "1.0.100"
+uuid = "1.18.1"
+md5 = "0.8.0"
