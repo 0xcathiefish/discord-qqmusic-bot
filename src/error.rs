@@ -3,6 +3,8 @@ use thiserror::Error;
 #[derive(Debug,Error)]
 pub enum BotError {
 
+    #[error("DiscordBot: Failed to initialize client")]
+    BotClientError,
 
 }
 

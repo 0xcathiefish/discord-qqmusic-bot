@@ -3,14 +3,13 @@ use crate::structs::*;
 
 use reqwest::header::{HeaderMap, COOKIE, REFERER};
 use reqwest::Client;
-use serde::Deserialize;
 use serde_json::json;
 use serenity::json::Value;
 
 use std::env;
 use log::{info, warn, error, debug};
 
-struct QQMusic {
+pub struct QQMusic {
 
     pub client: Client,
 }

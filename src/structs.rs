@@ -1,5 +1,6 @@
 use serde::Deserialize;
-
+use serenity::model::channel::Message;
+use serenity::all::Context;
 
 #[derive(Debug,Clone)]
 pub struct MusicPlayList {
@@ -40,4 +41,11 @@ pub struct Data {
 #[derive(Debug, Deserialize)]
 pub struct MidUrlInfo {
     pub purl: String,
+}
+
+#[derive(Debug)]
+pub enum BotCommand {
+    Cancel { ctx: Context, msg: Message },
+    Search { ctx: Context, msg: Message, Name: String }, 
+    Play { ctx: Context, msg: Message, ID: String }, 
 }
