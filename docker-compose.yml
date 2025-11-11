@@ -1,0 +1,20 @@
+services:
+
+  qqmusic-bot:
+
+    image: ghcr.io/0xcathiefish/discord-qqmusic-bot:latest
+
+    container_name: qqmusic-bot
+
+    restart: always
+
+    env_file:
+      - .env
+
+    networks:
+      - cycle
+
+
+networks:
+  cycle:
+    external: true
