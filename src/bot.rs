@@ -61,7 +61,7 @@ impl Bot {
     }
 
 
-    async fn play_music(ctx: &Context, msg: &Message, record_url: &str) -> Result<(), BotError> {
+    pub async fn play_music(ctx: &Context, msg: &Message, record_url: &str) -> Result<(), BotError> {
         
 
         let guild_id = match msg.guild_id {
@@ -291,7 +291,7 @@ mod tests {
                     // Command Cancel match
                     BotCommand::Cancel { ctx, msg } => {
 
-                        let result = "Got Command Cancel".to_string();
+                        let result = "Sir, I can't cancle this shit music".to_string();
                         (ctx, msg, result)
                     }
 

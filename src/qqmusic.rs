@@ -168,42 +168,44 @@ impl QQMusic {
             return "List is empty".to_string();
         }
     
-        // 1. 定义你想要的固定宽度
+        // 定义固定宽度，保持不变
         const ID_WIDTH: usize = 25;
         const NAME_WIDTH: usize = 30;
         const PLAYER_WIDTH: usize = 30;
     
         let mut table = Table::new();
-    
-        // 关键：我们不再设置表格的格式，而是直接创建无边框的表格
-        // 后面手动绘制边框
         table.set_format(*format::consts::FORMAT_CLEAN);
     
-    
-        // 2. 创建被空格填充过的表头，以强制设定列宽
-        // 使用 format! 宏来左对齐文本并填充空格
         let id_header = format!("{:<width$}", "ID", width = ID_WIDTH);
         let name_header = format!("{:<width$}", "Name", width = NAME_WIDTH);
         let player_header = format!("{:<width$}", "Player", width = PLAYER_WIDTH);
         
         table.add_row(row![b->id_header, b->name_header, b->player_header]);
     
-        // 3. 遍历数据并添加行
-        // 内容会自动被填充到与表头相同的宽度
         for item in playlist {
-            // 为了防止内容过长撑破表格，可以手动截断
-            let name = if item.name.len() > NAME_WIDTH {
-                format!("{}...", &item.name[..NAME_WIDTH - 3])
+            // --- START OF FIX ---
+    
+            // ✅ 1. 使用 .chars().count() 来计算字符数量，而不是字节长度
+            let name = if item.name.chars().count() > NAME_WIDTH {
+                // ✅ 2. 安全地截断：
+                //    - .chars() -> 获取字符迭代器
+                //    - .take(NAME_WIDTH - 3) -> 取前 N 个字符
+                //    - .collect::<String>() -> 将这些字符重新组合成一个新的 String
+                let truncated_name = item.name.chars().take(NAME_WIDTH - 3).collect::<String>();
+                format!("{}...", truncated_name)
             } else {
                 item.name.clone()
             };
     
-            let player = if item.player.len() > PLAYER_WIDTH {
-                format!("{}...", &item.player[..PLAYER_WIDTH - 3])
+            // ✅ 对 player 字段做同样的安全处理
+            let player = if item.player.chars().count() > PLAYER_WIDTH {
+                let truncated_player = item.player.chars().take(PLAYER_WIDTH - 3).collect::<String>();
+                format!("{}...", truncated_player)
             } else {
                 item.player.clone()
             };
     
+            // --- END OF FIX ---
     
             table.add_row(Row::new(vec![
                 Cell::new(&item.id),
@@ -212,10 +214,10 @@ impl QQMusic {
             ]));
         }
         
-        // 4. 返回被代码块包裹的字符串
         format!("```\n{}```", table.to_string())
     }
 
+    
 }
 
 
