@@ -6,6 +6,8 @@ use reqwest::Client;
 use serde_json::json;
 use serenity::json::Value;
 
+use prettytable::{Table, Row, Cell, row, format};
+
 use std::env;
 use log::{info, warn, error, debug};
 
@@ -90,7 +92,7 @@ impl QQMusic {
 
     // Get search result of song's name
 
-    pub async fn get_search_list(&self, keyword: &str) -> Result<Vec<MusicPlayList>,QQMusicError> {
+    pub async fn get_search_list(&self, keyword: &str) -> Result<String,QQMusicError> {
 
         let mut playlist: Vec<MusicPlayList> = vec![];
 
@@ -147,7 +149,9 @@ impl QQMusic {
                     count = count + 1;
                 }
 
-                Ok(playlist)
+                let tabel_display = Self::_format_display(&playlist).await;
+
+                Ok(tabel_display)
             }
 
             None => {
@@ -157,6 +161,61 @@ impl QQMusic {
             }
         }
     }
+
+    async fn _format_display(playlist: &Vec<MusicPlayList>) -> String {
+
+        if playlist.is_empty() {
+            return "List is empty".to_string();
+        }
+    
+        // 1. 定义你想要的固定宽度
+        const ID_WIDTH: usize = 25;
+        const NAME_WIDTH: usize = 30;
+        const PLAYER_WIDTH: usize = 30;
+    
+        let mut table = Table::new();
+    
+        // 关键：我们不再设置表格的格式，而是直接创建无边框的表格
+        // 后面手动绘制边框
+        table.set_format(*format::consts::FORMAT_CLEAN);
+    
+    
+        // 2. 创建被空格填充过的表头，以强制设定列宽
+        // 使用 format! 宏来左对齐文本并填充空格
+        let id_header = format!("{:<width$}", "ID", width = ID_WIDTH);
+        let name_header = format!("{:<width$}", "Name", width = NAME_WIDTH);
+        let player_header = format!("{:<width$}", "Player", width = PLAYER_WIDTH);
+        
+        table.add_row(row![b->id_header, b->name_header, b->player_header]);
+    
+        // 3. 遍历数据并添加行
+        // 内容会自动被填充到与表头相同的宽度
+        for item in playlist {
+            // 为了防止内容过长撑破表格，可以手动截断
+            let name = if item.name.len() > NAME_WIDTH {
+                format!("{}...", &item.name[..NAME_WIDTH - 3])
+            } else {
+                item.name.clone()
+            };
+    
+            let player = if item.player.len() > PLAYER_WIDTH {
+                format!("{}...", &item.player[..PLAYER_WIDTH - 3])
+            } else {
+                item.player.clone()
+            };
+    
+    
+            table.add_row(Row::new(vec![
+                Cell::new(&item.id),
+                Cell::new(&name),
+                Cell::new(&player),
+            ]));
+        }
+        
+        // 4. 返回被代码块包裹的字符串
+        format!("```\n{}```", table.to_string())
+    }
+
 }
 
 
@@ -191,5 +250,34 @@ mod tests {
         let keyword = "永不失联的爱";
 
         app.get_search_list(keyword).await.unwrap();
+    }
+
+
+    #[tokio::test] 
+    pub async fn test_format_display() {
+
+        dotenvy::dotenv().ok();
+        env_logger::init();
+
+        let playlist = vec![
+            MusicPlayList {
+                id: "C400000HnvQU05eTgI".to_string(),
+                name: "晴天".to_string(),
+                player: "周杰伦".to_string(),
+            },
+            MusicPlayList {
+                id: "C400003lghpv0iXmD6".to_string(),
+                name: "以父之名".to_string(),
+                player: "周杰伦".to_string(),
+            },
+            MusicPlayList {
+                id: "C400001aBvJ41eRkL".to_string(),
+                name: "十年".to_string(),
+                player: "陈奕迅".to_string(),
+            },
+        ];
+
+        let table_string = QQMusic::_format_display(&playlist).await;
+        info!("{}", table_string);
     }
 }

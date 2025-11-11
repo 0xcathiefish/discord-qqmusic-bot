@@ -9,7 +9,9 @@ tokio = { version = "1.48.0", features = ["full"] }
 
 serenity = { version = "0.12.4", features = ["client", "gateway", "rustls_backend", "model", "cache"] }
 
-songbird = { version = "0.5.0", features = ["serenity", "rustls", "gateway"] }
+songbird = { version = "0.5.0", features = ["serenity", "rustls", "driver", "gateway", "builtin-queue"] }
+
+symphonia = { version = "0.5", features = ["aac", "mp3", "isomp4"] }
 
 reqwest = { version = "0.12.24", features = ["json"] }
 
@@ -26,3 +28,4 @@ thiserror = "2.0.17"
 anyhow = "1.0.100"
 uuid = "1.18.1"
 md5 = "0.8.0"
+prettytable-rs = "0.10.0"

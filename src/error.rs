@@ -6,6 +6,20 @@ pub enum BotError {
     #[error("DiscordBot: Failed to initialize client")]
     BotClientError,
 
+    #[error("DiscordBot: Failed to load audio channel")]
+    BotAudioChannelError,
+
+    #[error("DiscordBot: Failed to load player")]
+    BotPlayerError,
+
+    #[error("DiscordBot: You need to join a channel first")]
+    BotUserNotJoinChannelError,
+
+    #[error("DiscordBot: Bot Failed to join the audio channel")]
+    BotJoinChannelError,
+
+    #[error("DiscordBot: Bot Failed to download the target music")]
+    BotDownloadMusicError,
 }
 
 #[derive(Debug,Error)]
