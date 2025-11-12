@@ -121,22 +121,57 @@ impl Bot {
 
         debug!("Suucess to download the music: {} KB", bytes.len() / 1024);
 
-
         let source: Input = bytes.into();
 
         let mut handle = handle_lock.lock().await;
 
         debug!("Playing with: {}", record_url);
 
-        let track = handle.play_input(source.into());
+        // Add  new music into the queue
+        handle.enqueue_input(source).await;
+
+        // let track = handle.play_input(source.into());
 
 
-        let info = track.get_info().await
-            .map_err(|e| format!("Failed to get record info: {:?}", e)).unwrap();
+        // let info = track.get_info().await
+        //     .map_err(|e| format!("Failed to get record info: {:?}", e)).unwrap();
 
-        debug!("Status: {:?}", info.playing);
+        // debug!("Status: {:?}", info.playing);
 
         Ok(())
+    }
+
+
+    pub async fn stop_music(ctx: &Context, msg: &Message) -> Result<(), BotError> {
+
+        let guild_id = match msg.guild_id {
+
+            Some(id) => id,
+            None => return Err(BotError::BotAudioChannelError),
+        };
+
+        let manager = match songbird::get(ctx).await {
+
+            Some(manager) => manager,
+            None => return Err(BotError::BotPlayerError),
+        };
+
+        if let Some(handler_lock) = manager.get(guild_id) {
+
+            let handler = handler_lock.lock().await;
+
+            handler.queue().stop();
+
+            debug!("Stopped all tracks in queue");
+
+            Ok(())
+
+        } 
+        
+        else {
+
+            Err(BotError::BotPlayerError)
+        }
     }
 
 

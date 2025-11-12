@@ -78,7 +78,7 @@ impl QQMusic {
                     let play_url = format!("{}{}", sip, midurlinfo.purl);
 
                     info!("QQmusic: Success to get music play url");
-                    info!("{:?}",play_url);
+                    debug!("{:?}",play_url);
                     return Ok(play_url);
                 }
             }

@@ -5,7 +5,7 @@ use discord_qqmusic_bot::structs::*;
 
 use dotenvy::dotenv;
 use tokio::sync::mpsc::{self, Sender, Receiver};
-use log::{info, error,debug};
+use log::{info, error,debug,warn};
 use std::sync::Arc;
 
 #[tokio::main]
@@ -30,7 +30,7 @@ async fn main () {
 
         let command = rx.recv().await.unwrap();
 
-        info!("Result = {:?}",command);
+        debug!("Result = {:?}",command);
 
         let qqmusic_clone = Arc::clone(&qqmusic_instance);
 
@@ -41,7 +41,23 @@ async fn main () {
                 // Command Cancel match
                 BotCommand::Cancel { ctx, msg } => {
 
-                    let result = "Sir, I can't cancle this shit music".to_string();
+                    let result = match Bot::stop_music(&ctx,&msg).await {
+
+                        Ok(_) => {
+
+                            info!("Success to cancel shit music");
+
+                            "Sir, I suceess to cancle this shit music".to_string()
+                        }
+
+                        Err(_) => {
+
+                            warn!("Failed to cancel music");
+                            "Sir, I failed to cancel this shit music".to_string()
+                        }
+                    };
+
+
                     (ctx, msg, result)
                 }
 
@@ -51,6 +67,8 @@ async fn main () {
                     // let result = "Got Command Search";
 
                     let playlist_table = qqmusic_clone.get_search_list(&Name).await.unwrap();
+
+                    info!("Success to get search result");
 
                     (ctx, msg, playlist_table)
                 }
@@ -65,6 +83,8 @@ async fn main () {
                     let url = qqmusic_clone.get_qqmusic_play_url(&ID).await.unwrap();
 
                     Bot::play_music(&ctx,&msg,&url).await.unwrap();
+
+                    info!("Success to add music into queue");
 
                     (ctx, msg, result)
                 }
