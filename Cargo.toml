@@ -11,7 +11,7 @@ serenity = { version = "0.12.4", features = ["client", "gateway", "rustls_backen
 
 songbird = { version = "0.5.0", features = ["serenity", "rustls", "driver", "gateway", "builtin-queue"] }
 
-symphonia = { version = "0.5", features = ["aac", "mp3", "isomp4"] }
+symphonia = { version = "0.5", features = ["aac", "mp3", "isomp4", "opt-simd"] }
 
 reqwest = { version = "0.12.24", features = ["json"] }
 
